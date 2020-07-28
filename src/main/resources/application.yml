@@ -1,2 +1,4 @@
 logging:
     file: ./logs/wathdog.log
+server:
+  port: 8770
