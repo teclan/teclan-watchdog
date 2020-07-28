@@ -18,13 +18,23 @@ public class DefaultService {
     private static final String APP_NAME = CommonConfig.getConfig().getString("应用名称");
 
     public JSONObject doShell(String shell) {
-        String batShell = APP_ROOT + File.separator + APP_NAME + File.separator + shell;
+       final String batShell = APP_ROOT + File.separator + APP_NAME + File.separator + shell;
         try {
             LOGGER.info("即将执行脚本:{}", batShell);
             if(!FileUtils.exists(new File(shell))){
                 throw  new Exception("脚本文件不存在");
             }
-            Executor.exec(batShell);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Executor.exec(batShell);
+                    } catch (Exception e) {
+                        LOGGER.error(e.getMessage(), e);
+                    }
+                }
+            }).start();
+
             return ResultUtils.getResult(200, "脚本执行成功,"+batShell);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
